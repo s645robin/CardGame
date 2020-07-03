@@ -19,12 +19,9 @@ assemble-release:
 	@cd android && chmod +x gradlew && ./gradlew assembleRelease
 
 remove-duplicates:
-	@cd ~/trendingorbit/djmusicweb/apps/DJMusicWeb/android/app/src/main/res && find . -name "node_modules_*" -type f -exec rm {} \;
-	@cd ~/trendingorbit/djmusicweb/apps/DJMusicWeb/android/app/src/main/res && find . -name "image_equalizer.gif" -type f -exec rm {} \;
-	@cd ~/trendingorbit/djmusicweb/apps/DJMusicWeb/android/app/src/main/res && find . -name "image_dmw_logo.png" -type f -exec rm {} \;
-	@cd ~/trendingorbit/djmusicweb/apps/DJMusicWeb/android/app/src/main/res && find . -name "image_personplaceholder.png" -type f -exec rm {} \;
-	@cd ~/trendingorbit/djmusicweb/apps/DJMusicWeb/android/app/src/main/res && find . -name "app.json" -type f -exec rm {} \;
-	@cd ~/trendingorbit/djmusicweb/apps/DJMusicWeb
+	@cd ~/CardGame/android/app/src/main/res && find . -name "node_modules_*" -type f -exec rm {} \;
+	@cd ~/CardGame/android/app/src/main/res && find . -name "app.json" -type f -exec rm {} \;
+	@cd ~/CardGame
 
 standard:
 	@standard --fix

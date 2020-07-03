@@ -41,6 +41,8 @@ const App = () => {
     dispatchUpdateLevel()
   }, [])
 
+  console.log('App rendered')
+
   return (
     <>
       <View style={styles.topContainer}>
