@@ -48,7 +48,7 @@ const Cards = (props) => {
         index={index}
         onCardPress={onCardPress}
         firstSelectedCardIndex={firstSelectedCardIndex}
-        dontFlip={cardsMatched.indexOf(index) > -1}
+        cardsMatched={cardsMatched}
       />
     )
   }, [firstSelectedCardIndex, cardsMatched, onCardPress])

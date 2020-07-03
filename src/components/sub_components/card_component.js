@@ -15,33 +15,12 @@ const CardComponent = (props) => {
   const [value, setValue] = React.useState(0)
   const [isFliped, setIsFlipped] = React.useState(false)
 
-  React.useEffect(() => {
-    animatedValue.addListener(({ value }) => {
-      setValue(value)
-    })
-  }, [])
-
-  React.useEffect(() => {
-    if (props.firstSelectedCardIndex === index && (!isFliped)) {
-      flipCard()
-    }
-  }, [props.firstSelectedCardIndex])
-
-  React.useEffect(() => {
-    if (
-      (props.firstSelectedCardIndex === props.index && (!isFliped)) ||
-      ((props.firstSelectedCardIndex === undefined) && (isFliped && (!props.dontFlip)))
-    ) {
-      flipCard()
-    }
-  }, [props.firstSelectedCardIndex, props.dontFlip, isFliped])
-
   const {
     number,
     index,
     onCardPress,
     firstSelectedCardIndex,
-    dontFlip,
+    cardsMatched,
     theme: {
       colors: {
         primary
@@ -49,43 +28,52 @@ const CardComponent = (props) => {
     }
   } = props
 
-  const frontInterpolate = animatedValue.interpolate({
-    inputRange: [0, 180],
-    outputRange: ['0deg', '180deg'],
-  })
-
-  const backInterpolate = animatedValue.interpolate({
-      inputRange: [0, 180],
-      outputRange: ['180deg', '360deg']
+  // set listener to animatedValue to update rotation degree, clear listener on unmount
+  React.useEffect(() => {
+    const _animatedListener = animatedValue.addListener(({ value }) => {
+      setValue(value)
     })
 
-  const frontOpacity = animatedValue.interpolate({
-      inputRange: [89, 90],
-      outputRange: [1, 0]
-    })
+    return () => {
+      // clearing setInterval on unmount to prevent memory leak
+      animatedValue.removeListener(_animatedListener)
+    }
+  }, [])
 
-  const backOpacity = animatedValue.interpolate({
-      inputRange: [89, 90],
-      outputRange: [0, 1]
-    })
+  // show already matched card and first selected card
+  React.useEffect(() => {
+    if (((props.firstSelectedCardIndex === index) || (props.cardsMatched.indexOf(index) > -1)) && (!isFliped)) {
+      flipCard()
+    }
+  }, [props.firstSelectedCardIndex, props.cardsMatched])
 
-  const _onCardPress = () => {
+  React.useEffect(() => {
+    const dontFlip = props.cardsMatched.indexOf(props.index) > -1
+    if (
+      (props.firstSelectedCardIndex === props.index && (!isFliped)) ||
+      ((props.firstSelectedCardIndex === undefined) && (isFliped && (!dontFlip)))
+    ) {
+      flipCard()
+    }
+  }, [props.firstSelectedCardIndex, props.cardsMatched, isFliped])
+
+  const _onCardPress = React.useCallback(() => {
+    const dontFlip = cardsMatched.indexOf(props.index) > -1
     if ((!dontFlip) && (!isFliped)) {
       flipCard()
-      props.onCardPress(number, index)
+      onCardPress(number, index)
     }
-  }
+  }, [cardsMatched, isFliped, onCardPress])
 
-  const frontAnimatedStyle = {
-      transform: [
-        { rotateY: frontInterpolate }
-      ]
-    }
-    const backAnimatedStyle = {
-      transform: [
-        { rotateY: backInterpolate }
-      ]
-    }
+  // create show card callback only on component mount to prevent recreate on every render
+  const showCard = React.useCallback(() => {
+    setIsFlipped(true)
+  }, [])
+
+  // create show card callback only on component mount to prevent recreate on every render
+  const hideCard = React.useCallback(() => {
+    setIsFlipped(false)
+  }, [])
 
   const flipCard = () => {
     if (value >= 90) {
@@ -93,16 +81,46 @@ const CardComponent = (props) => {
         toValue: 0,
         friction: 8,
         tension: 10
-      }).start()
+      }).start(hideCard) // callback to fire after animation finish
     } else {
       Animated.spring(animatedValue,{
         toValue: 180,
         friction: 8,
         tension: 10
-      }).start()
+      }).start(showCard) // callback to fire after animation finish
     }
+  }
 
-    setIsFlipped(!isFliped)
+  const frontInterpolate = animatedValue.interpolate({
+    inputRange: [0, 180],
+    outputRange: ['0deg', '180deg'],
+  })
+
+  const backInterpolate = animatedValue.interpolate({
+    inputRange: [0, 180],
+    outputRange: ['180deg', '360deg']
+  })
+
+  const frontOpacity = animatedValue.interpolate({
+    inputRange: [89, 90],
+    outputRange: [1, 0]
+  })
+
+  const backOpacity = animatedValue.interpolate({
+    inputRange: [89, 90],
+    outputRange: [0, 1]
+  })
+
+  const frontAnimatedStyle = {
+    transform: [
+      { rotateY: frontInterpolate }
+    ]
+  }
+
+  const backAnimatedStyle = {
+    transform: [
+      { rotateY: backInterpolate }
+    ]
   }
 
   return (
@@ -159,11 +177,12 @@ const styles = StyleSheet.create({
   }
 })
 
+// dont update component if none of the below props change
 const arePropsEqual = (prevProps, nextProps) => {
   const isEqual = (
     prevProps.onCardPress === nextProps.onCardPress &&
     prevProps.firstSelectedCardIndex === nextProps.firstSelectedCardIndex &&
-    prevProps.dontFlip === nextProps.dontFlip
+    prevProps.cardsMatched === nextProps.cardsMatched
   )
 
   return isEqual
