@@ -1,5 +1,5 @@
 import {
-  randomNumbers  
+  randomNumbers
 } from '../utils'
 
 export const initialState = {
@@ -8,5 +8,6 @@ export const initialState = {
   score: 0,
   numbers: randomNumbers(0),
   firstSelectedCardIndex: undefined,
-  cardsMatched: []
+  cardsMatched: [],
+  currentLevelCompleted: false
 }

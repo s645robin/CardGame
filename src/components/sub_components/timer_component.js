@@ -27,13 +27,11 @@ const TimerComponent = (props) => {
 const styles = StyleSheet.create({
   container: {
     height: 56,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center'
   },
   text: {
-    fontSize: 20,
-    color: '#000'
+    fontSize: 16
   }
 })
 

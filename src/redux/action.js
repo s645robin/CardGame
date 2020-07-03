@@ -17,3 +17,7 @@ export const updateCardsMatched = (matchedCardsIndexes) => ({
 export const updateTimer = () => ({
   type: types.UPDATE_TIMER
 })
+
+export const updateCurrentLevelCompleted = () => ({
+  type: types.UPDATE_CURRENT_LEVEL_COMPLETED
+})

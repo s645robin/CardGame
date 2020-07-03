@@ -15,10 +15,7 @@ export const appReducer = (state = initialState, action) => {
         ...state,
         level: state.level + 1,
         numbers: randomNumbers(state.level + 1),
-        firstSelectedCardIndex: initialState.firstSelectedCardIndex,
-        cardsMatched: initialState.cardsMatched,
-        timer: initialState.timer,
-        score: state.score + (state.level * 10)
+        currentLevelCompleted: false
       }
 
     case types.UPDATE_FIRST_SELECTED_CARD_INDEX:
@@ -37,6 +34,16 @@ export const appReducer = (state = initialState, action) => {
       return {
         ...state,
         timer: state.timer + 1
+      }
+
+    case types.UPDATE_CURRENT_LEVEL_COMPLETED:
+      return {
+        ...state,
+        firstSelectedCardIndex: initialState.firstSelectedCardIndex,
+        cardsMatched: initialState.cardsMatched,
+        timer: initialState.timer,
+        score: state.score + (state.level * 10),
+        currentLevelCompleted: true
       }
 
     default:
